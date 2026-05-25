@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GREEN-API · Test Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #18181b;
+      --text-muted: #71717a;
+      --text-faint: #a1a1aa;
+      --accent: #1fad56;
+      --accent-hover: #178c45;
+      --accent-soft: #ecfdf5;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.04);
+      --shadow-md: 0 4px 12px rgba(24, 24, 27, 0.06);
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .brand-name {
+      font-size: 15px;
+    }
+
+    .brand-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    .topbar-meta {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 28px;
+      display: grid;
+      grid-template-columns: minmax(380px, 1fr) minmax(440px, 1.2fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fcfcfb;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .input,
+    .textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font: inherit;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .input:focus,
+    .textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .textarea {
+      resize: vertical;
+      min-height: 70px;
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: white;
+    }
+
+    .method-tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .method-get {
+      background: #eff6ff;
+      color: #1e40af;
+    }
+
+    .method-post {
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .field-row .input {
+      flex: 1;
+    }
+
+    .response-wrap {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 180px);
+      min-height: 460px;
+    }
+
+    .response-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 12px;
+      font-size: 12px;
+      font-family: "JetBrains Mono", monospace;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-faint);
+    }
+
+    .status-dot.ok {
+      background: var(--accent);
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+    }
+
+    .status-dot.loading {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.4; }
+    }
+
+    .response-output {
+      flex: 1;
+      margin: 0;
+      padding: 18px 20px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--surface);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: auto;
+      border: 0;
+      resize: none;
+    }
+
+    .response-output:focus {
+      outline: none;
+    }
+
+    .response-output::placeholder {
+      color: var(--text-faint);
+      font-style: italic;
+    }
+
+    .footer {
+      padding: 18px 28px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-faint);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--border-strong);
+    }
+
+    .footer a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">GREEN-API</span>
+      <span class="brand-sub">· Test Console</span>
+    </div>
+    <div class="topbar-meta" id="endpointDisplay">api.green-api.com</div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT COLUMN: CONTROLS -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Controls</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- Instance credentials -->
+        <div class="section">
+          <span class="section-label">Instance</span>
+          <label>
+            idInstance
+            <input
+              id="idInstance"
+              class="input"
+              type="text"
+              placeholder="1101000001"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <label>
+            ApiTokenInstance
+            <input
+              id="apiTokenInstance"
+              class="input"
+              type="text"
+              placeholder="d75b3a66374942c5b3c019c698abc34..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Status methods -->
+        <div class="section">
+          <span class="section-label">Status</span>
+          <button class="btn" id="btnGetSettings">
+            <span class="method-tag method-get">GET</span>
+            getSettings
+          </button>
+          <button class="btn" id="btnGetStateInstance">
+            <span class="method-tag method-get">GET</span>
+            getStateInstance
+          </button>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Send message -->
+        <div class="section">
+          <span class="section-label">Send message</span>
+          <label>
+            Phone number
+            <input
+              id="msgPhone"
+              class="input"
+              type="text"
+              placeholder="77001234567"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <label>
+            Message
+            <textarea
+              id="msgText"
+              class="textarea"
+              placeholder="Hello, World!"
+            >Hello, World!</textarea>
+          </label>
+          <button class="btn btn-primary" id="btnSendMessage">
+            <span class="method-tag method-post" style="background: rgba(255,255,255,0.2); color: white;">POST</span>
+            sendMessage
+          </button>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Send file -->
+        <div class="section">
+          <span class="section-label">Send file by URL</span>
+          <label>
+            Phone number
+            <input
+              id="filePhone"
+              class="input"
+              type="text"
+              placeholder="77001234567"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <label>
+            File URL
+            <input
+              id="fileUrl"
+              class="input"
+              type="text"
+              placeholder="https://example.com/img/horse.png"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <button class="btn btn-primary" id="btnSendFile">
+            <span class="method-tag method-post" style="background: rgba(255,255,255,0.2); color: white;">POST</span>
+            sendFileByUrl
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: RESPONSE -->
+    <section class="panel response-wrap">
+      <div class="panel-header">
+        <span class="panel-title">Response</span>
+        <span class="topbar-meta" id="lastCall">no calls yet</span>
+      </div>
+      <div class="response-meta">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">idle</span>
+        <span style="margin-left: auto;" id="latency"></span>
+      </div>
+      <textarea
+        class="response-output"
+        id="responseOutput"
+        readonly
+        placeholder="Ответы API будут отображаться здесь."
+      ></textarea>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Built for GREEN-API · static HTML · vanilla JS · no dependencies
+  </footer>
+
+  <script>
+    /**
+     * GREEN-API test console
+     * Single-file vanilla JS client for 4 endpoints:
+     *   - getSettings        (GET)
+     *   - getStateInstance   (GET)
+     *   - sendMessage        (POST)
+     *   - sendFileByUrl      (POST)
+     *
+     * Endpoint format:
+     *   https://api.green-api.com/waInstance{idInstance}/{method}/{apiTokenInstance}
+     */
+
+    const BASE_URL = "https://api.green-api.com";
+
+    const els = {
+      idInstance: document.getElementById("idInstance"),
+      apiTokenInstance: document.getElementById("apiTokenInstance"),
+      msgPhone: document.getElementById("msgPhone"),
+      msgText: document.getElementById("msgText"),
+      filePhone: document.getElementById("filePhone"),
+      fileUrl: document.getElementById("fileUrl"),
+      output: document.getElementById("responseOutput"),
+      statusDot: document.getElementById("statusDot"),
+      statusText: document.getElementById("statusText"),
+      latency: document.getElementById("latency"),
+      lastCall: document.getElementById("lastCall"),
+      buttons: {
+        getSettings: document.getElementById("btnGetSettings"),
+        getStateInstance: document.getElementById("btnGetStateInstance"),
+        sendMessage: document.getElementById("btnSendMessage"),
+        sendFile: document.getElementById("btnSendFile"),
+      },
+    };
+
+    /** Read & validate instance credentials */
+    function readCreds() {
+      const id = els.idInstance.value.trim();
+      const token = els.apiTokenInstance.value.trim();
+      if (!id || !token) {
+        throw new Error(
+          "idInstance и ApiTokenInstance обязательны. Заполните поля выше."
+        );
+      }
+      return { id, token };
+    }
+
+    /** Convert phone to GREEN-API chatId (digits only + @c.us) */
+    function toChatId(phone) {
+      const digits = (phone || "").replace(/\D+/g, "");
+      if (!digits) {
+        throw new Error("Укажите номер телефона (например, 77001234567).");
+      }
+      return `${digits}@c.us`;
+    }
+
+    /** Set status pill */
+    function setStatus(state, text) {
+      els.statusDot.className = "status-dot " + state;
+      els.statusText.textContent = text;
+    }
+
+    /** Render response (object → pretty JSON, error → message) */
+    function renderResponse(payload) {
+      if (typeof payload === "string") {
+        els.output.value = payload;
+      } else {
+        els.output.value = JSON.stringify(payload, null, 2);
+      }
+    }
+
+    /** Disable all action buttons during request */
+    function setBusy(busy) {
+      Object.values(els.buttons).forEach((b) => (b.disabled = busy));
+    }
+
+    /** Core request handler shared by all methods */
+    async function callApi(method, httpMethod, body = null) {
+      let creds;
+      try {
+        creds = readCreds();
+      } catch (e) {
+        setStatus("error", "validation");
+        renderResponse({ error: e.message });
+        return;
+      }
+
+      const url = `${BASE_URL}/waInstance${creds.id}/${method}/${creds.token}`;
+      const safeUrl = url.replace(creds.token, "***");
+      els.lastCall.textContent = `${httpMethod} ${method}`;
+
+      setBusy(true);
+      setStatus("loading", "sending…");
+      els.latency.textContent = "";
+      const t0 = performance.now();
+
+      try {
+        const opts = {
+          method: httpMethod,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body !== null) opts.body = JSON.stringify(body);
+
+        const res = await fetch(url, opts);
+        const elapsed = Math.round(performance.now() - t0);
+        els.latency.textContent = `${elapsed}ms`;
+
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text;
+        }
+
+        if (res.ok) {
+          setStatus("ok", `${res.status} ok`);
+          renderResponse(data);
+        } else {
+          setStatus("error", `${res.status} ${res.statusText || "error"}`);
+          renderResponse({
+            httpStatus: res.status,
+            url: safeUrl,
+            body: data,
+          });
+        }
+      } catch (err) {
+        const elapsed = Math.round(performance.now() - t0);
+        els.latency.textContent = `${elapsed}ms`;
+        setStatus("error", "network");
+        renderResponse({ error: err.message, url: safeUrl });
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    /** ---- Method handlers ---- */
+
+    els.buttons.getSettings.addEventListener("click", () => {
+      callApi("getSettings", "GET");
+    });
+
+    els.buttons.getStateInstance.addEventListener("click", () => {
+      callApi("getStateInstance", "GET");
+    });
+
+    els.buttons.sendMessage.addEventListener("click", () => {
+      let chatId;
+      try {
+        chatId = toChatId(els.msgPhone.value);
+      } catch (e) {
+        setStatus("error", "validation");
+        renderResponse({ error: e.message });
+        return;
+      }
+      const message = els.msgText.value;
+      if (!message.trim()) {
+        setStatus("error", "validation");
+        renderResponse({ error: "Сообщение не должно быть пустым." });
+        return;
+      }
+      callApi("sendMessage", "POST", { chatId, message });
+    });
+
+    els.buttons.sendFile.addEventListener("click", () => {
+      let chatId;
+      try {
+        chatId = toChatId(els.filePhone.value);
+      } catch (e) {
+        setStatus("error", "validation");
+        renderResponse({ error: e.message });
+        return;
+      }
+      const urlFile = els.fileUrl.value.trim();
+      if (!/^https?:\/\//i.test(urlFile)) {
+        setStatus("error", "validation");
+        renderResponse({
+          error: "URL файла должен начинаться с http:// или https://",
+        });
+        return;
+      }
+      // Derive a basic filename from URL path
+      let fileName = "file";
+      try {
+        const parsed = new URL(urlFile);
+        const last = parsed.pathname.split("/").filter(Boolean).pop();
+        if (last) fileName = decodeURIComponent(last);
+      } catch {
+        /* keep default */
+      }
+      callApi("sendFileByUrl", "POST", { chatId, urlFile, fileName });
+    });
+
+    /* Initialize status pill */
+    setStatus("", "idle");
+  </script>
+</body>
+</html>
